@@ -3,9 +3,7 @@ package code;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import exceptions.exception_1;;
+import java.util.regex.Pattern;;
 
 public class compliation_01 {
 
@@ -68,7 +66,7 @@ public class compliation_01 {
 		return res;
 	}
 
-	public boolean const_judge(String program) throws exception_1 {
+	public boolean const_judge(String program) throws exception_01 {
 		// 输入：一个表达式的字符串
 		// 功能: 判断整个程序开头是否是包含const关键字
 		// 输出：true/false
@@ -80,7 +78,7 @@ public class compliation_01 {
 			int index = program.indexOf("=");
 			String object = program.substring(0, index).trim();// 取出第一个等号之前的字符串
 			if (object.split(" ").length > 1 && !object.split(" ")[0].equals("const")) {
-				throw new exception_1(my_exceptions.get("IDENTIFIER_ERROR"));
+				throw new exception_01(my_exceptions.get("IDENTIFIER_ERROR"));
 
 			}
 			return false;
@@ -125,7 +123,7 @@ public class compliation_01 {
 		// 功能:找出右边字符串定义的错误类型
 		// 输出 my_exceptions中对应的错误
 		// 字符定义错误
-		if (right_part_of_exp == '\'' && right_part_of_exp.length() > 3) {
+		if (right_part_of_exp.charAt(0) == '\'' && right_part_of_exp.length() > 3) {
 			System.out.println(my_exceptions.get("CHAR_BEYOND_ERROR"));
 			return my_exceptions.get("CHAR_BEYOND_ERROR");
 		} else if (right_part_of_exp.startsWith("0")) {
@@ -138,11 +136,11 @@ public class compliation_01 {
 
 	}
 
-	public void classify_and_output(String exps[]) throws exception_1 {
+	public void classify_and_output(String exps[]) throws exception_01 {
 		for (String exp : exps) {
 			String temp[] = exp.split("=");
 			if (temp.length < 2) { // 对表达式进行检查
-				throw new exception_1("表达式格式错误");
+				throw new exception_01("表达式格式错误");
 			}
 			String left = temp[0].trim();
 			String right = temp[1].trim();
@@ -159,11 +157,11 @@ public class compliation_01 {
 		return false;
 	}
 
-	public void classify_and_output(ArrayList<String> exps) throws exception_1 {
+	public void classify_and_output(ArrayList<String> exps) throws exception_01 {
 		for (String exp : exps) {
 			String temp[] = exp.split("=");
 			if (temp.length < 2) { // 对表达式进行检查
-				throw new exception_1("表达式格式错误");
+				throw new exception_01("表达式格式错误");
 			}
 			String left = temp[0].trim();
 			String right = temp[1].trim();
@@ -188,7 +186,7 @@ public class compliation_01 {
 		}
 	}
 
-	public static void main(String[] args) throws exception_1 {
+	public static void main(String[] args) throws exception_01 {
 		Init();
 		compliation_01 t = new compliation_01();
 		String program = "const count=10,12sum=81.5,char1=‘ff’,max=0016;";
