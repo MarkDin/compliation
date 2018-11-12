@@ -18,6 +18,7 @@ public class Exp {
         this.left = left;
     }
 
+    
     public void addRight(String right) {
         /**
          * 添加一个做部分为left对应的right
