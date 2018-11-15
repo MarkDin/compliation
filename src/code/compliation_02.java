@@ -31,23 +31,27 @@ public class compliation_02 {
          * 初始化所有字母表的nullable为false
          * 置所有终结符的first集为本身
 		 */
+		// 给非终结符的first集合分配空间
 		for (String str : VN) {
 			HashSet<String> temp = new HashSet<String>();
 			First.put(str, temp);
 		}
+		// 给非终结符的first集合分配空间
 		for (String str : VN) {
 			HashSet<String> temp = new HashSet<String>();
 			Follow.put(str, temp);
 		}
+		// 初始化终结符的first集为本身
+//        for (String t : VT) {
+//			HashSet<String> temp = new HashSet<>();
+//			temp.add(t);
+//			First.put(t, temp);
+//		}
+//
 		for (String t : VT) {
-			HashSet<String> temp = new HashSet<>();
-			temp.add(t);
-			First.put(t, temp);
-		}
-		for (String t : VT) {
-			HashSet<String> temp = new HashSet<>();
-			temp.add(t);
-			Follow.put(t, temp);
+//			HashSet<String> temp = new HashSet<>();
+//			temp.add(t);
+//			Follow.put(t, temp);
 		}
 		for (String t :
 			 VN) {
@@ -146,31 +150,32 @@ public class compliation_02 {
          */
     }
 
-	public void first(Exp exp) {
-		/**
-		 *
-		 */
-		int i, j, k;
-	}
+//	public void first(Exp exp) {
+//		/**
+//		 *
+//		 */
+//		int i, j, k;
+//	}
 
-	public void follow(Exp exp) {
+	public void follow(String left, String right) {
 		/**
 		 * 求参数中aim的follow集合 1.取出expSet右边的set集合 并遍历其右部 找到与包含aim的 命名为str str对应的左边为A
 		 * 2.若在str中aim后面没有字符 即aim在str中最右边 那么把follow(A)加入其follow集 3.若在str后面有字符* 如果*不能推出ε
 		 * 那么把first(*)中非空元素加入follow(aim) 如果*能推出ε 那么把
 		 */
 		int i, j, k, size;
-		String right = exp.getRightList(); // 取出exp的右边的产生式
+		//String right = exp.getRightList(); // 取出exp的右边的产生式
 		HashSet<String> temp = new HashSet<>(); // 临时存放follow集的set集合
 		k = right.length();
 		size = 0; // 初始化follow集合大小为0
 		for (i = 0; i < k; i++) {
 			for (j = i + 1; j < k; j++) {
 				if (isNullable(right.substring(i, j).toCharArray())) { // 判断i+1到j之间的串是否可以全部为空
-					temp.addAll(First.get(right.charAt(j+1)));// 将j后一个符号的first集加入到所求的follow集中
+					String str = String.valueOf(right.charAt(j+1));
+					temp.addAll(First.get(str));// 将j后一个符号的first集加入到所求的follow集中
 				}
 				if(isNullable(right.substring(i, k-1).toCharArray())) {
-					temp.addAll(c); // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
+					temp.addAll(Follow.get(left)); // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
 				}
 				if (temp.size() == size) { // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
 					break;
@@ -183,6 +188,6 @@ public class compliation_02 {
 	}
 
 	public static void main(String args[]) {
-		new compliation_02().Init();
+		// new compliation_02().Init();
 	}
 }
