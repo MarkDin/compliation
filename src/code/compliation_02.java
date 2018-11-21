@@ -1,24 +1,30 @@
 package code;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import com.sun.istack.internal.Nullable;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.print.attribute.standard.NumberUp;
+import java.util.*;
+
+import static junit.framework.TestCase.assertNotNull;
+
 
 public class compliation_02 {
-	/***
-	 * 架构 全局变量 首先每个非终结符对应的First集Follow集必须初始化和分配空间 初始的set的size大小为0 终结符的first集为本身
-	 * lookedhead表示当前正在匹配的字母 first函数用来求first集 follow函数。。。。 select函数求。。。
-	 * is_left_left判断是否为LL(1)型文法 match函数用来判断lookedhead和传入参数是否匹配 返回true/false
-	 * Parse_S函数是开始符S对应的分析程序
-	 */
-	String S; // 开始符
+    /***
+     * 架构 全局变量 首先每个非终结符对应的First集Follow集必须初始化和分配空间 初始的set的size大小为0 终结符的first集为本身
+     * lookedhead表示当前正在匹配的字母 first函数用来求first集 follow函数。。。。 select函数求。。。
+     * is_left_left判断是否为LL(1)型文法 match函数用来判断lookedhead和传入参数是否匹配 返回true/false
+     * Parse_S函数是开始符S对应的分析程序
+     */
+    String S; // 开始符
     final String Null = null;
-	HashSet<String> VT; // 终结符集
-	HashSet<String> VN; // 非终结符集
-	HashMap<String, HashSet<String>> First; // first集合
-	HashMap<String, HashSet<String>> Follow; // follow集合
-	HashMap<String, Boolean> Nullable; // 记录产生式是否可以推出ε
-	HashMap<String, HashSet<String>> expSet; // 产生式集合
+    HashSet<String> VT; // 终结符集
+    HashSet<String> VN; // 非终结符集
+    HashMap<String, HashSet<String>> First; // first集合
+    HashMap<String, HashSet<String>> Follow; // follow集合
+    HashMap<String, Boolean> Nullable; // 记录产生式是否可以推出ε
+    HashMap<String, HashSet<String>> expSet; // 产生式集合
 
     public compliation_02(String S, HashSet<String> VT, HashSet<String> VN, HashMap<String,
             HashSet<String>> expSet) {
@@ -34,9 +40,15 @@ public class compliation_02 {
          * 初始化所有字母表的nullable为false
          * 置所有终结符的first集为本身
          */
+        First = new HashMap<String, HashSet<String>>();
+        Follow = new HashMap<String, HashSet<String>>();
+        Nullable = new HashMap<String, Boolean>();
         // 给非终结符的first集合分配空间
         for (String str : VN) {
             HashSet<String> temp = new HashSet<String>();
+//            assertNotNull(First);
+//            System.out.println(temp==null);
+//            System.out.println(str);
             First.put(str, temp);
         }
         // 给非终结符的follow集合分配空间
@@ -46,10 +58,10 @@ public class compliation_02 {
         }
         // 初始化终结符的first集为本身
         for (String t : VT) {
-			HashSet<String> temp = new HashSet<String>();
-			temp.add(t);
-			First.put(t, temp);
-		}
+            HashSet<String> temp = new HashSet<String>();
+            temp.add(t);
+            First.put(t, temp);
+        }
         // 初始化终结符的follow集为本身
 //        for (String t : VT) {
 //			HashSet<String> temp = new HashSet<>();
@@ -143,27 +155,75 @@ public class compliation_02 {
          * 检查seq中的每一个符号是否都可以推空
          * 若是返回true 否则返回false
          */
+        if (seq.length == 0) {
+            return true;
+        }
         for (int i = 0; i < seq.length; i++) {
-            if (Nullable.get(seq[i]) != true) {
+            if (String.valueOf(seq[i]) == "Y") {
+                System.out.println("^^^^^"+Nullable.get("Y"));
+            }
+            if (!Nullable.get(String.valueOf(seq[i]))) { // 一旦有一个不能推空 返回false
                 return false;
             }
         }
         return true;
     }
 
-    public void nullable(char[] seq) {
+    public void nullable() {
         /**
          * 判断所有非终结符是否可以推空
          * 是 则置nullable为true 否 则置false
          */
+        while (true) {
+            boolean flag = false;
+            for (String vn :
+                    VN) {
+                if (!expSet.containsKey(vn)) {
+                    continue;
+                }
+                // 下面遍历来判断vn的所有产生式能否推空
+                HashSet<String> strings = expSet.get(vn); // 取出左部为vn的表达式集合
+                Iterator iterator = strings.iterator();
+                while (iterator.hasNext()) {
+                    String exp = (String) iterator.next();
+                    if (exp == Null) { // 如果直接可以推空
+                        Boolean bool = Nullable.get(vn);
+                        Nullable.put(vn, true);
+                        if (bool == false) {
+                            flag = true;
+                        }
+                        continue;
+                    }
+                    boolean res = false;
+                    res = isNullable(exp.toCharArray()); // 判断exp是否可以推空
+                    if (res) { // 如果vn开始符的某一个产生式可以推空 就置Nullable集合为true
+                        Boolean bool = Nullable.get(vn);
+                        Nullable.put(vn, res);
+                        if (bool == false) {
+                            flag = true;
+                        }
+                    }
+                }
+
+            }
+            if (!flag) { // 如果大小未变 则退出while循环
+                System.out.println("nullable中break生效");
+                break;
+            }
+        }
     }
 
 //	public void first(Exp exp) {
-//		/**
-//		 *
-//		 */
-//		int i, j, k;
-//	}
+////		/**
+////		 *
+////		 */
+////		int i, j, k;
+////	}
+
+    public void first() {
+        int i, j, k, size;
+
+    }
 
     public void follow(String left, String right) {
         /**
@@ -178,9 +238,17 @@ public class compliation_02 {
         size = 0; // 初始化follow集合大小为0
         for (i = 0; i < k; i++) {
             for (j = i + 1; j < k; j++) {
+                char[] t = right.substring(i, j).toCharArray();
+                System.out.println("测试1----str=");
+                for (char a :
+                        t) {
+                    System.out.print(a);
+                }
                 if (isNullable(right.substring(i, j).toCharArray())) { // 判断i+1到j之间的串是否可以全部为空
-                    String str = String.valueOf(right.charAt(j + 1));
-                    temp.addAll(First.get(str));// 将j后一个符号的first集加入到所求的follow集中
+                    if (j + 1 < right.length()) {
+                        String str = String.valueOf(right.charAt(j + 1));
+                        temp.addAll(First.get(str));// 将j后一个符号的first集加入到所求的follow集中
+                    }
                 }
                 if (isNullable(right.substring(i, k - 1).toCharArray())) {
                     temp.addAll(Follow.get(left)); // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
@@ -197,6 +265,5 @@ public class compliation_02 {
 
     public static void main(String args[]) {
 
-//          new compliation_02().Init();
     }
 }

@@ -14,12 +14,26 @@ public class compliation_02Test {
 
     @Before
     public void setUp() throws Exception {
-
+//        HashMap<String, HashSet<String>> map = new HashMap<>();
+//        ArrayList a = new ArrayList();
+//        a.add("a");
+//        a.add("b");
+//        //a.clear();
+//        HashSet set = new HashSet();
+//        set.addAll(a);
+//        map.put("set", set);
+//        a.add("c");
+//        a.add("d");
+//        System.out.println(set);
+//        System.out.println(map);
+//        set.addAll(a);
+//        System.out.println(a);
+//        //map.put("a", a);
     }
 
     @After
     public void tearDown() throws Exception {
-    }
+        }
 
     @Test
     public void init() {
@@ -31,21 +45,24 @@ public class compliation_02Test {
         VN.add("X");
         VN.add("Y");
         VN.add("Z");
+        VN.add("S");
         // VT
         VT.add("d");
         VT.add("a");
         VT.add("c");
         // expSet
+
         // Z
         temp.add("d");
         temp.add("XYZ");
         expSet.put("Z", temp);
-        temp.clear();
+        temp = new HashSet<>();
         // Y
         temp.add(null);
         temp.add("c");
         expSet.put("Y", temp);
-        temp.clear();
+        temp = new HashSet<>();
+
         // X
         temp.add("Y");
         temp.add("a");
@@ -56,13 +73,15 @@ public class compliation_02Test {
         for (String t :
                 VT) {
             res.add(test.First.get(t));
-            System.out.println(test.First.get(t));
+            System.out.println(t+"的first集合为"+test.First.get(t));
         }
-        ArrayList list = new ArrayList();
-        list.add("a");
-        list.add("d");
-        list.add("c");
-//        assertArrayEquals(list, res);
-        assertEquals(list, res);
+//        for (String vn :
+//                VN) {
+//            System.out.println("vn:"+vn+" "+expSet.get(vn));
+//        }
+        test.follow("X", "a");
+        test.follow("Y", "a");
+        test.follow("Z", "XYZ");
+        System.out.println(test.Follow);
     }
 }
