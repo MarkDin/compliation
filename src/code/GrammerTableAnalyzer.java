@@ -167,7 +167,7 @@ public class GrammerTableAnalyzer {
     // 查找M[A,a]对应的产生式操作为 table.get()
     public static void main(String[] args) {
         compliation_02 Test = new data_case().analyzeData();
-        GrammerTableAnalyzer analyzer = new GrammerTableAnalyzer("gdd");
+        GrammerTableAnalyzer analyzer = new GrammerTableAnalyzer("gdd#");
         analyzer.getTable(analyzer.table, Test);
         System.out.println(analyzer.table.containsKey(new Pair<>("A", "g")));
 //        for (Pair p :
