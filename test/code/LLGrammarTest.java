@@ -3,7 +3,10 @@ package code;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import  org.junit.jupiter.api.Assertions;
 
 public class LLGrammarTest {
 
@@ -16,8 +19,16 @@ public class LLGrammarTest {
         GrammerTableAnalyzerTest test = new GrammerTableAnalyzerTest();
         test.getTable();
         LLGrammar Test = test.Test;
-        Test.follow(Test.Follow);
-
+        HashMap<String, HashSet<String>> expected = Test.follow(Test.expSet);
+        System.out.println(expected.isEmpty());
         System.out.println(Test.Follow);
+        for (String vn : expected.keySet()) {
+            HashSet<String> follow = expected.get(vn);
+            System.out.println(vn+"的follow集为:");
+            for (String s : follow) {
+                System.out.println(s);
+            }
+            System.out.println("---------------------------------");
+        }
     }
 }

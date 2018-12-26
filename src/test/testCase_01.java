@@ -1,8 +1,9 @@
 package test;
-import java.util.ArrayList;
 
 import code.compliation_01;
 import code.exception_01;
+
+import java.util.ArrayList;
 
 public class testCase_01 {
 	public void test_split_by_semicolon() {

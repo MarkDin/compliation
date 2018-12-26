@@ -4,7 +4,11 @@
 package code;
 
 import javafx.util.Pair;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Stack;
 
 public class GrammerTableAnalyzer {
     Stack<String> s; //堆栈

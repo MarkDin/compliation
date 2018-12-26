@@ -1,12 +1,10 @@
 package LR文法分析;
 
-import code.Exp;
 import code.Grammar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 /**
  *@description 每个产生式需要标号 因为在进行归约操作的时候 标号可以指示使用哪一条产生式
  *@创建人  DingKe

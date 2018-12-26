@@ -1,10 +1,9 @@
 package code;
 
-import org.omg.CosNaming.NamingContextPackage.NotEmpty;
-
-import java.util.*;
-
-import static junit.framework.TestCase.assertNotNull;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 
 public class LLGrammar extends Grammar {
@@ -164,7 +163,13 @@ public class LLGrammar extends Grammar {
         }
         return true;
     }
-
+    /**
+     描述: TODO.
+     *@return void
+     *@exception
+     *@author DingKe
+     *@since 2018/12/26 0026 22:32
+     */
     public void nullable() {
         /**
          * 判断所有非终结符是否可以推空
@@ -223,13 +228,15 @@ public class LLGrammar extends Grammar {
      */
     public HashMap<String, HashSet<String>> follow(HashMap<String, HashSet<String>> expSet) {
         int i, j, k, size;
-        HashSet<String> temp = new HashSet<>(); // 临时存放follow集的set集合
-        HashMap<String, HashSet<String>> res = new HashMap<>();
+        HashMap<String, HashSet<String>> res = new HashMap<>(); // 存放follow集的set集合
         size = 0; // 初始化follow集合大小为0
         for (String s : expSet.keySet()) { // 遍历所有产生式
             String left = s; // 当前产生式左部非终结符
             HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
             for (String right : rightSet) { // 遍历left为左部的所有产生式
+                if (right == null ) { // right为null 即ε
+                    continue;
+                }
                 k = right.length();
                 for (i = 0; i < k; i++) {
                     String vn = String.valueOf(right.charAt(i));
@@ -248,10 +255,10 @@ public class LLGrammar extends Grammar {
                             res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
                         }
 //                      若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
-                        if (temp.size() == size) {
+                        if (res.size() == size) {
                             break;
                         }
-                        size = temp.size();
+                        size = res.size();
                     }
 
                 }
