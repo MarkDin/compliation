@@ -8,7 +8,7 @@ import java.util.HashSet;
  */
 
 public class eraseBadRuleAndLeftRecursion {
-    compliation_02 Test = new data_case().analyzeData();
+    LLGrammar Test = (LLGrammar)new data_case().analyzeData();
     public void eliminateLeftRecursion(String left, String right, Exp exp){
         /**
          *
@@ -21,10 +21,10 @@ public class eraseBadRuleAndLeftRecursion {
         set.add(null);
         set.add(Z);
         Test.expSet.put("Z",set); // 将新的产生式加入expSet
-        Exp newExp = new Exp(left);
+        Exp newExp = new LLExp(left);
         newExp.addRight(Z);
-        for (String R: // 构造新的右部产生式集合
-             exp.rightList) {
+        for (Object R: // 构造新的右部产生式集合
+                exp.rightList) {
             if (!R.equals(right)) { // 如果不是产生递归的那个产生式
                 newExp.rightList.add(R + Z); // 在产生式右部末尾加上Z
             }

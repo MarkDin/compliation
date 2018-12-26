@@ -6,11 +6,6 @@ package code;
 import javafx.util.Pair;
 import java.util.*;
 
-import code.compliation_02.*;
-import code.data_case.*;
-import jdk.nashorn.internal.ir.VarNode;
-import org.junit.Test;
-
 public class GrammerTableAnalyzer {
     Stack<String> s; //堆栈
     String input;// 输入串
@@ -41,7 +36,7 @@ public class GrammerTableAnalyzer {
 //                System.out.println("测试二"+ch.toCharArray()[0]);
 
                 if (right.charAt(0) == ch.toCharArray()[0]) {
-                    Exp exp = new Exp(X);
+                    Exp exp = new LLExp(X);
                     exp.addRight(right);
                     return exp;
                 }
@@ -54,13 +49,13 @@ public class GrammerTableAnalyzer {
     // next_char是下一个输入的字符 X是堆栈的栈顶的非终结符 vn是非终结符
     // 如果next_char在First(vn)中, 将X->vn加入到table[X,next_char]中 表示遇到next_char的时候可以选用X->vn这个产生式去推导
     // 如果vn是可为空的 那么对next_char属于Follow(X) 将X->vn加入到table[X,next_char]中
-    public static void getTable(HashMap<Pair<String, String>, Exp> table, compliation_02 Test) {
+    public static void getTable(HashMap<Pair<String, String>, Exp> table, LLGrammar Test) {
         for (String vn : // 初始化table每一项的Exp 注意Exp的右部会自动分配空间但大小为0
                 Test.VN) {
             for (String vt :
                     Test.VT) {
                 Pair pair = new Pair(vn, vt);
-                table.put(pair, new Exp(vn));
+                table.put(pair, new LLExp(vn));
             }
         }
         for (String vn :
@@ -97,7 +92,7 @@ public class GrammerTableAnalyzer {
         }
     }
 
-    public void analyze(String startChar, compliation_02 Test) {
+    public void analyze(String startChar, LLGrammar Test) {
         /**
          * 对输入的串进行预测分析
          */
@@ -166,8 +161,8 @@ public class GrammerTableAnalyzer {
 
     // 查找M[A,a]对应的产生式操作为 table.get()
     public static void main(String[] args) {
-        compliation_02 Test = new data_case().analyzeData();
-        GrammerTableAnalyzer analyzer = new GrammerTableAnalyzer("gdd#");
+        LLGrammar Test = (LLGrammar) new data_case().analyzeData();
+        GrammerTableAnalyzer analyzer = new GrammerTableAnalyzer("gdd");
         analyzer.getTable(analyzer.table, Test);
         System.out.println(analyzer.table.containsKey(new Pair<>("A", "g")));
 //        for (Pair p :

@@ -3,13 +3,9 @@ package code;
 import javafx.util.Pair;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Stack;
-
-import static org.junit.Assert.*;
 
 public class GrammerTableAnalyzerTest {
 
@@ -70,7 +66,7 @@ public class GrammerTableAnalyzerTest {
         temp.add("gAf");
         temp.add("c");
         expSet.put("E", temp);
-        compliation_02 Test = new compliation_02("S", VT, VN, expSet);
+        LLGrammar Test = new LLGrammar("S", VT, VN, expSet);
         Test.Init();
         // 手动构造first集
         HashSet<String> set = new HashSet<>();

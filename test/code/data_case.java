@@ -1,11 +1,10 @@
 package code;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class data_case {
-    public compliation_02 nullable() {
+    public LLGrammar nullable() {
         HashSet<String> VT = new HashSet<String>(); // 终结符集
         HashSet<String> VN = new HashSet<String>(); // 非终结符集
         HashMap<String, HashSet<String>> expSet = new HashMap<String, HashSet<String>>(); // 产生式集合
@@ -39,7 +38,7 @@ public class data_case {
         // S
         temp.add("Y");
         expSet.put("S", temp);
-        compliation_02 Test = new compliation_02("S", VT, VN, expSet);
+        LLGrammar Test = new LLGrammar("S", VT, VN, expSet);
         return Test;
     }
 }

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
-
 public class compliation_02Test {
 
     @Before
@@ -67,7 +65,7 @@ public class compliation_02Test {
         temp.add("Y");
         temp.add("a");
         expSet.put("X", temp);
-        compliation_02 test = new compliation_02("S", VT, VN, expSet);
+        LLGrammar test = new LLGrammar("S", VT, VN, expSet);
         test.Init();
         ArrayList res = new ArrayList();
         for (String t :

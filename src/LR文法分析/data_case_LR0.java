@@ -1,10 +1,12 @@
-package code;
+package LR文法分析;
+
+import code.Grammar;
+import code.LLGrammar;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class data_case {
-
+public class data_case_LR0 {
     public Grammar analyzeData(){
         Grammar Test; // 定义文法类型
         HashSet<String> VT = new HashSet<String>(); // 终结符集
@@ -54,7 +56,7 @@ public class data_case {
         temp.add("gAf");
         temp.add("c");
         expSet.put("E", temp);
-        Test = new LLGrammar("S", VT, VN, expSet);
+        Test = new LR0Grammar("S", VT, VN, expSet);
         Test.Init();
         // 手动构造first集
         HashSet<String> set = new HashSet<>();
@@ -127,44 +129,6 @@ public class data_case {
         set.add(endChar);
         Test.Follow.put("E",set);
 
-        return Test;
-    }
-
-    public LLGrammar nullable() {
-        HashSet<String> VT = new HashSet<String>(); // 终结符集
-        HashSet<String> VN = new HashSet<String>(); // 非终结符集
-        HashMap<String, HashSet<String>> expSet = new HashMap<String, HashSet<String>>(); // 产生式集合
-        HashSet<String> temp = new HashSet<>();
-        // VN
-        VN.add("X");
-        VN.add("Y");
-        VN.add("Z");
-        VN.add("S");
-        // VT
-        VT.add("d");
-        VT.add("a");
-        VT.add("c");
-        // expSet
-
-        // Z
-        temp.add("d");
-        temp.add("XYZ");
-        expSet.put("Z", temp);
-        temp = new HashSet<>();
-        // Y
-        temp.add(null);
-        temp.add("c");
-        expSet.put("Y", temp);
-        temp = new HashSet<>();
-
-        // X
-        temp.add("Y");
-        temp.add("a");
-        temp = new HashSet<>();
-        // S
-        temp.add("Y");
-        expSet.put("S", temp);
-        LLGrammar Test = new LLGrammar("S", VT, VN, expSet);
         return Test;
     }
 }
