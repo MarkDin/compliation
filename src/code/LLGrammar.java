@@ -1,10 +1,7 @@
 package code;
 
-import com.sun.istack.internal.Nullable;
-import org.junit.Assert;
-import org.junit.Test;
+import org.omg.CosNaming.NamingContextPackage.NotEmpty;
 
-import javax.print.attribute.standard.NumberUp;
 import java.util.*;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -25,7 +22,6 @@ public class LLGrammar extends Grammar {
 //    HashMap<String, HashSet<String>> Follow; // follow集合
 //    HashMap<String, Boolean> Nullable; // 记录产生式是否可以推出ε
 //    HashMap<String, HashSet<String>> expSet; // 产生式集合
-
     public LLGrammar(String S, HashSet<String> VT, HashSet<String> VN, HashMap<String,
             HashSet<String>> expSet) {
         this.S = S;
@@ -125,7 +121,7 @@ public class LLGrammar extends Grammar {
         return First.get(left);
     }
 
-    public void first(LLExp exp) {
+    public void my_first(LLExp exp) {
         /**
          * 求参数中exp左部的first集合
          */
@@ -213,42 +209,57 @@ public class LLGrammar extends Grammar {
         }
     }
 
-    public void follow(String left, String right) {
-        /**
-         * 求参数中aim的follow集合 1.取出expSet右边的set集合 并遍历其右部 找到与包含aim的 命名为str str对应的左边为A
-         * 2.若在str中aim后面没有字符 即aim在str中最右边 那么把follow(A)加入其follow集 3.若在str后面有字符* 如果*不能推出ε
-         * 那么把first(*)中非空元素加入follow(aim) 如果*能推出ε 那么把
-         */
+    public void first(LLExp exp) {
+
+    }
+
+    /**
+     描述: TODO.
+     *@param  expSet 产生式集合
+     *@return  java.util.HashMap<java.lang.String,java.util.HashSet<java.lang.String>>
+     *@exception
+     *@author DingKe
+     *@since 2018/12/26 0026 22:10
+     */
+    public HashMap<String, HashSet<String>> follow(HashMap<String, HashSet<String>> expSet) {
         int i, j, k, size;
-        //String right = exp.getRightList(); // 取出exp的右边的产生式
         HashSet<String> temp = new HashSet<>(); // 临时存放follow集的set集合
-        k = right.length();
+        HashMap<String, HashSet<String>> res = new HashMap<>();
         size = 0; // 初始化follow集合大小为0
-        for (i = 0; i < k; i++) {
-            for (j = i + 1; j < k; j++) {
-                char[] t = right.substring(i, j).toCharArray();
-                System.out.println("测试1----str=");
-                for (char a :
-                        t) {
-                    System.out.print(a);
-                }
-                if (isNullable(right.substring(i, j).toCharArray())) { // 判断i+1到j之间的串是否可以全部为空
-                    if (j + 1 < right.length()) {
-                        String str = String.valueOf(right.charAt(j + 1));
-                        temp.addAll(First.get(str));// 将j后一个符号的first集加入到所求的follow集中
+        for (String s : expSet.keySet()) { // 遍历所有产生式
+            String left = s; // 当前产生式左部非终结符
+            HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
+            for (String right : rightSet) { // 遍历left为左部的所有产生式
+                k = right.length();
+                for (i = 0; i < k; i++) {
+                    String vn = String.valueOf(right.charAt(i));
+//                  下面是求vn的follow集
+                    for (j = i + 1; j < k; j++) {
+                        char[] t = right.substring(i, j).toCharArray();
+//                      判断i+1到j之间的串是否可以全部为空
+                        if (isNullable(right.substring(i, j).toCharArray())) {
+                            if (j + 1 < right.length()) {
+                                String str = String.valueOf(right.charAt(j + 1));
+                                res.put(vn, First.get(str)); // 将j后一个符号的first集加入到所求vn的follow集中
+                            }
+                        }
+//                      所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
+                        if (isNullable(right.substring(i, k - 1).toCharArray())) {
+                            res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
+                        }
+//                      若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
+                        if (temp.size() == size) {
+                            break;
+                        }
+                        size = temp.size();
                     }
+
                 }
-                if (isNullable(right.substring(i, k - 1).toCharArray())) {
-                    temp.addAll(Follow.get(left)); // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
-                }
-                if (temp.size() == size) { // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
-                    break;
-                }
-                size = temp.size();
+
             }
 
         }
-
+        return res;
     }
 
     public static void main(String args[]) {

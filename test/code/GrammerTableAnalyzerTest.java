@@ -9,17 +9,7 @@ import java.util.HashSet;
 
 public class GrammerTableAnalyzerTest {
 
-    @Before
-    public void setUp() throws Exception {
-        char ch = 'a';
-        System.out.println("a".equals(ch));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-
+    LLGrammar Test;
     public void getTable() {
         HashSet<String> VT = new HashSet<String>(); // 终结符集
         HashSet<String> VN = new HashSet<String>(); // 非终结符集
@@ -66,7 +56,7 @@ public class GrammerTableAnalyzerTest {
         temp.add("gAf");
         temp.add("c");
         expSet.put("E", temp);
-        LLGrammar Test = new LLGrammar("S", VT, VN, expSet);
+        Test = new LLGrammar("S", VT, VN, expSet);
         Test.Init();
         // 手动构造first集
         HashSet<String> set = new HashSet<>();
@@ -138,7 +128,7 @@ public class GrammerTableAnalyzerTest {
         set.add("f");
         set.add(endChar);
         Test.Follow.put("E", set);
-
+/*
 //        // 测试输入是否正确
         for (String vn :
                 VN) {
@@ -148,6 +138,7 @@ public class GrammerTableAnalyzerTest {
                     exps) {
                 System.out.println(exp);
             }
+
 //            // First集
 //            System.out.println(vn+"的first集为");
 //            System.out.println("--------------------");
@@ -174,7 +165,7 @@ public class GrammerTableAnalyzerTest {
                 System.out.println("value: " + table.get(p).left + "->" + table.get(p).rightList);
             }
         }
-
-
+*/
     }
+
 }
