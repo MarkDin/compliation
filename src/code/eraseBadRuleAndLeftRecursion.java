@@ -1,6 +1,9 @@
 package code;
 //import compliation_01;
 
+import jdk.nashorn.internal.ir.VarNode;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -31,5 +34,51 @@ public class eraseBadRuleAndLeftRecursion {
         }
 
     }
+
+    public boolean hasVN(ArrayList<String> list) {
+        /**
+         * 判断list中所有右部是否都是以终结符开头
+         * 是 返回true
+         * 否 返回false
+         */
+        for (String right :
+                list) {
+            String t = String.valueOf(right.charAt(0));
+            if (Test.VN.contains(t)) { // 最左边还是非终结符
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void extractComonLeftFactor(Exp exp) {
+        /**
+         * 作用:提取给出的单个产生式exp的公共左因子
+         * 1.先将隐式的公因子化为显示的
+         */
+        // 先将隐式的公因子化为显示的
+        // 步骤为将产生式右部最左边的非终结符进行替换,直到最左边为终结符
+        String left = exp.left;
+        for (String right : // 遍历left为左部的所有产生式
+                (String[]) exp.rightList.toArray()) {
+
+            String t = String.valueOf(right.charAt(0)); // t为右部最左字符
+            if (Test.VT.contains(t)) { // 如果t是终结符
+                continue;
+            }
+            // 进行替换
+            while (hasVN(exp.rightList)) { // 循环替换直到最左边不是非终结符
+                String substring = right.substring(1, right.length()); // 去掉第一个字符后的String
+                HashSet<String> sets = Test.expSet.get(t); // 取出待替换的全部产生式set集合
+                for (String r :
+                        sets) {
+                    exp.rightList.add(r + substring); // 进行替换拼接 并加入到rightlist
+                }
+                exp.rightList.remove(right); // 删除当前左边为非终结符的右部
+            }
+            //
+        }
+    }
+
 
 }
