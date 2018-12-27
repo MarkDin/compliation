@@ -28,11 +28,11 @@ public class LLGrammarTest {
         HashMap<String, HashSet<String>> expectedFirst = test.Test.First;
         HashMap<String, HashSet<String>> expectedFollow = test.Test.Follow;
         Test.Init();
+        System.out.println(expectedFirst);
         Test.nullable();
         HashMap<String, HashSet<String>> expected = Test.follow(Test.expSet);
-        System.out.println(expected.isEmpty());
-        System.out.println(Test.Nullable);
+        // System.out.println(Test.Nullable);
         System.out.println(Test.First);
-        System.out.println(Test.Follow);
+        System.out.println(expected);
     }
 }

@@ -111,12 +111,12 @@ public class LLGrammar extends Grammar {
             HashSet<String> set = expSet.get(right); // 取出right的产生式集合
             for (String t : // 遍历右边表达式的首个字母
                     set) {
-                boolean flag = false;
-                while (flag) {
+                boolean FLAG = false;
+                while (FLAG) {
                     HashSet<String> t_set = expSet.get(t);
                     for (String tt : t_set) {
                         if (isTerminal(tt)) { // 找到终结符了 先不返回 置标记为true 继续遍历寻找终结符
-                            flag = true;
+                            FLAG = true;
                             HashSet<String> right_set = First.get(exp.left);// 取出first集合
                             right_set.add(tt); // 添加元素
                             First.put(exp.left, right_set); // 整体添加到对应first集合
@@ -160,7 +160,7 @@ public class LLGrammar extends Grammar {
          * 是 则置nullable为true 否 则置false
          */
         while (true) {
-            boolean flag = false;
+            boolean FLAG = false;
             for (String vn :
                     VN) {
                 if (!expSet.containsKey(vn)) {
@@ -175,7 +175,7 @@ public class LLGrammar extends Grammar {
                         Boolean bool = Nullable.get(vn);
                         Nullable.put(vn, true);
                         if (bool == false) {
-                            flag = true;
+                            FLAG = true;
                         }
                         continue;
                     }
@@ -185,14 +185,13 @@ public class LLGrammar extends Grammar {
                         Boolean bool = Nullable.get(vn);
                         Nullable.put(vn, res);
                         if (bool == false) {
-                            flag = true;
+                            FLAG = true;
                         }
                     }
                 }
 
             }
-            if (!flag) { // 如果大小未变 则退出while循环
-                System.out.println("nullable中break生效");
+            if (!FLAG) { // 如果大小未变 则退出while循环
                 break;
             }
         }
@@ -202,7 +201,7 @@ public class LLGrammar extends Grammar {
      * 描述: TODO.
      *
      * @param expSet 产生式集合
-     * @return java.util.HashMap<java.lang.String                                                               ,                                                               java.util.HashSet                                                               <                                                               java.lang.String>>
+     * @return java.util.HashMap<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               java.util.HashSet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               java.lang.String>>
      * @throws
      * @author DingKe
      * @since 2018/12/26 0026 22:10
@@ -212,12 +211,64 @@ public class LLGrammar extends Grammar {
 
     }
 
+    /**
+     * 描述: TODO.
+     *
+     * @param set 要进行移除ε处理的first集合
+     * @return java.util.HashSet<java.lang.String>
+     * @throws
+     * @author DingKe
+     * @since 2018/12/27 0027 18:55
+     */
+    public HashSet<String> removeNullCharFromFirstSet(HashSet<String> set) {
+        HashSet<String> res = new HashSet<>();
+        if (set.contains(null)) {
+            res = (HashSet<String>) set.clone();
+            System.out.println("------去除ε后的集合--");
+            System.out.println(res);
+            res.remove(null);
+            return res;
+        }
+        return set;
+    }
+
+    public boolean name(String left, String right, int j, int k) {
+        // 处理右部字符可推空的情况
+        boolean FLAG = false;
+        if (j < k - 1 && isNullable(right.substring(0, j).toCharArray())) { // j字符前面全可推空
+            HashSet<String> set = this.First.get(left);
+            String value = String.valueOf(right.charAt(j)); // 取出j位置字符
+            // 将j字符的first集加入到left的first集
+            HashSet<String> newSet = First.get(value);
+            // 说明left的First集合不含ε 而value的First集含ε 需要将去掉ε的first集合并入left的First集
+            if (!First.get(left).contains(null) && newSet.contains(null)) {
+                newSet = removeNullCharFromFirstSet(newSet); // 将要并入的集合移除ε
+            }
+            int size = set.size();
+            set.addAll(newSet); // 合并集合
+            if (set.size() > size) { // 有新元素加入
+                FLAG = true;
+            }
+            this.First.put(left, set);
+        }
+        return FLAG;
+    }
+
+    /**
+     * 描述: 先求first集 再求follow集.
+     *
+     * @param expSet
+     * @return java.util.HashMap<java.lang.String   ,   java.util.HashSet   <   java.lang.String>>
+     * @throws
+     * @author DingKe
+     * @since 2018/12/27 0027 20:21
+     */
     public HashMap<String, HashSet<String>> follow(HashMap<String, HashSet<String>> expSet) {
         int i, j, k;
-        boolean flag;
+        boolean FLAG;// 跳出while循环标记
         HashMap<String, HashSet<String>> res = new HashMap<>(); // 存放follow集的set集合
         while (true) {
-            flag = false;
+            FLAG = false;
             for (String s : expSet.keySet()) { // 遍历所有产生式
                 String left = s; // 当前产生式左部非终结符
                 HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
@@ -227,49 +278,50 @@ public class LLGrammar extends Grammar {
                     }
                     k = right.length();
                     for (i = 0; i < k; i++) {
+                        // 求first集
+                        boolean SKIP = false; // 跳过标记
                         String vn = String.valueOf(right.charAt(i));
-
+                        HashSet<String> set = this.First.get(left); // left的first集
+                        String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
+                        // 将firstLetter的first集加入
+                        int size = set.size();
+                        set.addAll(removeNullCharFromFirstSet(this.First.get(firstLetter)));
+                        if (set.size() > size) { // 有新元素加入
+                            FLAG = true;
+                        }
+                        this.First.put(left, set);
+                        // 如果右部只有一个元素 跳过下面的循环求first的部分
+                        if (right.length() == 1) {
+                            if (right == null) { // 右部只有一个元素ε
+                                set.add(null); // 将ε加入left的first集
+                            }
+                            SKIP = true;
+                        }
                         for (j = i + 1; j < k; j++) {
-                            char[] t = right.substring(i, j).toCharArray();
-//                      求first集
-                            String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
-                            // 如果是终结符 将其加入
-                            if (VT.contains(firstLetter)) {
-                                HashSet<String> set = this.First.get(left);
-                                set.add(firstLetter);
-                                this.First.put(left, set);
-                            }
-                            // 处理右部字符可推空的情况
-                            if (isNullable(right.substring(0, j).toCharArray()) && j + 1 <= right.length() - 1) {
-                                String value = String.valueOf(right.charAt(j + 1));
-                            // 将j后面字符的first集加入到left的first集
-                                this.First.put(left, First.get(value));
-                                flag = true;
-                            }
-
-//                      下面是求vn的follow集
+                        // 求first集 处理右部字符可推空的情况
+                            FLAG = name(left, right, j, k);
+//                      求vn的follow集
                             // 判断i到j之间的串是否可以全部为空
                             if (isNullable(right.substring(i, j).toCharArray())) {
                                 if (j + 1 < right.length()) {
                                     String str = String.valueOf(right.charAt(j + 1));
                                     res.put(vn, First.get(str)); // 将j后一个符号的first集加入到所求vn的follow集中
-                                    flag = true;
+                                    FLAG = true;
 
                                 }
                             }
                             // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
                             if (isNullable(right.substring(i, k - 1).toCharArray())) {
                                 res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
-                                flag = true;
+                                FLAG = true;
                             }
-//
                         }
 
                     }
 
                 }
                 // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
-                if (!flag) {
+                if (!FLAG) {
                     break;
                 }
             }
