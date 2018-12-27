@@ -57,12 +57,9 @@ public class LLGrammar extends Grammar {
             temp.add(t);
             First.put(t, temp);
         }
-        // 初始化终结符的follow集为本身
-//        for (String t : VT) {
-//			HashSet<String> temp = new HashSet<>();
-//			temp.add(t);
-//			Follow.put(t, temp);
-//        }
+        // 初始ε的first集为本身
+        First.put(null, null);
+
         // 初始化所有字母表的nullable为false
         for (String t :
                 VN) {
@@ -74,32 +71,17 @@ public class LLGrammar extends Grammar {
         }
     }
 
+    /**
+     * 描述: 判断参数中的str是否在终结符集合中.
+     *
+     * @param str 要判断的文法字符
+     * @return boolean
+     * @throws
+     * @author DingKe
+     * @since 2018/12/27 0027 11:50
+     */
     public boolean isTerminal(String str) {
-        /**
-         * 判断参数中的str是否在终结符集合中
-         */
         return true ? VT.contains(str) : false;
-    }
-
-    public HashSet<String> getFirst(String left, boolean flag) {
-        /**
-         * 用递归的方式来求参数中left的first集合
-         */
-        if (!First.get(left).isEmpty()) { // 如果已经求出了first集 返回即可
-            flag = true;
-            return First.get(left);
-        } else {
-            while (!flag) {
-                HashSet<String> set = expSet.get(left);
-                for (String right : set) {
-                    First.put(right, getFirst(right, flag));
-                    if (!First.get(right).isEmpty()) {
-                        flag = true;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public HashSet<String> getFirst(String left) {
@@ -163,12 +145,14 @@ public class LLGrammar extends Grammar {
         }
         return true;
     }
+
     /**
-     描述: TODO.
-     *@return void
-     *@exception
-     *@author DingKe
-     *@since 2018/12/26 0026 22:32
+     * 描述: TODO.
+     *
+     * @return void
+     * @throws
+     * @author DingKe
+     * @since 2018/12/26 0026 22:32
      */
     public void nullable() {
         /**
@@ -214,62 +198,82 @@ public class LLGrammar extends Grammar {
         }
     }
 
-    public void first(LLExp exp) {
+    /**
+     * 描述: TODO.
+     *
+     * @param expSet 产生式集合
+     * @return java.util.HashMap<java.lang.String                                                               ,                                                               java.util.HashSet                                                               <                                                               java.lang.String>>
+     * @throws
+     * @author DingKe
+     * @since 2018/12/26 0026 22:10
+     */
+    public void first(HashMap<String, HashSet<String>> expSet) {
+
 
     }
 
-    /**
-     描述: TODO.
-     *@param  expSet 产生式集合
-     *@return  java.util.HashMap<java.lang.String,java.util.HashSet<java.lang.String>>
-     *@exception
-     *@author DingKe
-     *@since 2018/12/26 0026 22:10
-     */
     public HashMap<String, HashSet<String>> follow(HashMap<String, HashSet<String>> expSet) {
-        int i, j, k, size;
+        int i, j, k;
+        boolean flag;
         HashMap<String, HashSet<String>> res = new HashMap<>(); // 存放follow集的set集合
-        size = 0; // 初始化follow集合大小为0
-        for (String s : expSet.keySet()) { // 遍历所有产生式
-            String left = s; // 当前产生式左部非终结符
-            HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
-            for (String right : rightSet) { // 遍历left为左部的所有产生式
-                if (right == null ) { // right为null 即ε
-                    continue;
-                }
-                k = right.length();
-                for (i = 0; i < k; i++) {
-                    String vn = String.valueOf(right.charAt(i));
-//                  下面是求vn的follow集
-                    for (j = i + 1; j < k; j++) {
-                        char[] t = right.substring(i, j).toCharArray();
-//                      判断i+1到j之间的串是否可以全部为空
-                        if (isNullable(right.substring(i, j).toCharArray())) {
-                            if (j + 1 < right.length()) {
-                                String str = String.valueOf(right.charAt(j + 1));
-                                res.put(vn, First.get(str)); // 将j后一个符号的first集加入到所求vn的follow集中
+        while (true) {
+            flag = false;
+            for (String s : expSet.keySet()) { // 遍历所有产生式
+                String left = s; // 当前产生式左部非终结符
+                HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
+                for (String right : rightSet) { // 遍历left为左部的所有产生式
+                    if (right == null) { // right为null 即ε
+                        continue;
+                    }
+                    k = right.length();
+                    for (i = 0; i < k; i++) {
+                        String vn = String.valueOf(right.charAt(i));
+
+                        for (j = i + 1; j < k; j++) {
+                            char[] t = right.substring(i, j).toCharArray();
+//                      求first集
+                            String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
+                            // 如果是终结符 将其加入
+                            if (VT.contains(firstLetter)) {
+                                HashSet<String> set = this.First.get(left);
+                                set.add(firstLetter);
+                                this.First.put(left, set);
                             }
+                            // 处理右部字符可推空的情况
+                            if (isNullable(right.substring(0, j).toCharArray()) && j + 1 <= right.length() - 1) {
+                                String value = String.valueOf(right.charAt(j + 1));
+                            // 将j后面字符的first集加入到left的first集
+                                this.First.put(left, First.get(value));
+                                flag = true;
+                            }
+
+//                      下面是求vn的follow集
+                            // 判断i到j之间的串是否可以全部为空
+                            if (isNullable(right.substring(i, j).toCharArray())) {
+                                if (j + 1 < right.length()) {
+                                    String str = String.valueOf(right.charAt(j + 1));
+                                    res.put(vn, First.get(str)); // 将j后一个符号的first集加入到所求vn的follow集中
+                                    flag = true;
+
+                                }
+                            }
+                            // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
+                            if (isNullable(right.substring(i, k - 1).toCharArray())) {
+                                res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
+                                flag = true;
+                            }
+//
                         }
-//                      所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
-                        if (isNullable(right.substring(i, k - 1).toCharArray())) {
-                            res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
-                        }
-//                      若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
-                        if (res.size() == size) {
-                            break;
-                        }
-                        size = res.size();
+
                     }
 
                 }
-
+                // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
+                if (!flag) {
+                    break;
+                }
             }
-
+            return res;
         }
-        return res;
-    }
-
-    public static void main(String args[]) {
-
     }
 }
