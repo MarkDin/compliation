@@ -1,5 +1,7 @@
 package code;
 
+import jdk.nashorn.internal.ir.Flags;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,9 +43,6 @@ public class LLGrammar extends Grammar {
         // 给非终结符的first集合分配空间
         for (String str : VN) {
             HashSet<String> temp = new HashSet<String>();
-//            assertNotNull(First);
-//            System.out.println(temp==null);
-//            System.out.println(str);
             First.put(str, temp);
         }
         // 给非终结符的follow集合分配空间
@@ -136,9 +135,6 @@ public class LLGrammar extends Grammar {
             return true;
         }
         for (int i = 0; i < seq.length; i++) {
-            if (String.valueOf(seq[i]) == "Y") {
-                System.out.println("^^^^^" + Nullable.get("Y"));
-            }
             if (!Nullable.get(String.valueOf(seq[i]))) { // 一旦有一个不能推空 返回false
                 return false;
             }
@@ -147,7 +143,7 @@ public class LLGrammar extends Grammar {
     }
 
     /**
-     * 描述: TODO.
+     * 描述: 判断所有非终结符是否可以推空是 则置nullable为true 否 则置false.
      *
      * @return void
      * @throws
@@ -155,10 +151,6 @@ public class LLGrammar extends Grammar {
      * @since 2018/12/26 0026 22:32
      */
     public void nullable() {
-        /**
-         * 判断所有非终结符是否可以推空
-         * 是 则置nullable为true 否 则置false
-         */
         while (true) {
             boolean FLAG = false;
             for (String vn :
@@ -198,21 +190,7 @@ public class LLGrammar extends Grammar {
     }
 
     /**
-     * 描述: TODO.
-     *
-     * @param expSet 产生式集合
-     * @return java.util.HashMap<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               java.util.HashSet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               java.lang.String>>
-     * @throws
-     * @author DingKe
-     * @since 2018/12/26 0026 22:10
-     */
-    public void first(HashMap<String, HashSet<String>> expSet) {
-
-
-    }
-
-    /**
-     * 描述: TODO.
+     * 描述: 移除set中的ε.
      *
      * @param set 要进行移除ε处理的first集合
      * @return java.util.HashSet<java.lang.String>
@@ -224,14 +202,44 @@ public class LLGrammar extends Grammar {
         HashSet<String> res = new HashSet<>();
         if (set.contains(null)) {
             res = (HashSet<String>) set.clone();
-            System.out.println("------去除ε后的集合--");
-            System.out.println(res);
+            // System.out.println(res);
             res.remove(null);
             return res;
         }
         return set;
     }
 
+    /**
+     * 描述: 将右部第一个字符的first集并入到所求的first集中.
+     *
+     * @param left 产生式左部 right 产生式右部 set left的first集合
+     * @return boolean
+     * @throws java.io.IOException
+     * @author DingKe
+     * @since 2018/12/28 0028 10:08
+     */
+    public boolean addFirstSetOfFirstLetter(String left, String right, HashSet<String> set) {
+        boolean flag = false;
+        String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
+        // 将firstLetter的first集加入
+        int size = set.size();
+        set.addAll(removeNullCharFromFirstSet(this.First.get(firstLetter)));
+        if (set.size() > size) { // 有新元素加入
+            flag = true;
+        }
+        this.First.put(left, set);
+        return flag;
+    }
+
+    /**
+     * 描述: 处理求first集时右部字符可推空的情况.
+     *
+     * @param left 产生式左部 right — 产生式左部 j —  要添加的first集的左部非终结符
+     * @return boolean
+     * @throws
+     * @author DingKe
+     * @since 2018/12/28 0028 9:40
+     */
     public boolean AllCharNullBefore(String left, String right, int j) {
         // 处理右部字符可推空的情况
         boolean FLAG = false;
@@ -239,6 +247,11 @@ public class LLGrammar extends Grammar {
         String value = String.valueOf(right.charAt(j)); // 取出j位置字符
         // 将j字符的first集加入到left的first集
         HashSet<String> newSet = First.get(value);
+        if (value.equals("C")) {
+            System.out.println("C出现了,打印:");
+            System.out.println(newSet);
+        }
+
         // 说明left的First集合不含ε 而value的First集含ε 需要将去掉ε的first集合并入left的First集
         if (!First.get(left).contains(null) && newSet.contains(null)) {
             newSet = removeNullCharFromFirstSet(newSet); // 将要并入的集合移除ε
@@ -255,50 +268,57 @@ public class LLGrammar extends Grammar {
     /**
      * 描述: 先求first集 再求follow集.
      *
-     * @param expSet
-     * @return java.util.HashMap<java.lang.String               ,               java.util.HashSet               <               java.lang.String>>
+     * @param expSet 文法的产生式集合
+     * @return java.util.HashMap<java.lang.String   ,   java.util.HashSet   <   java.lang.String>>
      * @throws
      * @author DingKe
-     * @since 2018/12/27 0027 20:21
+     * @since 2018/12/28 0028 9:55
      */
     public HashMap<String, HashSet<String>> follow(HashMap<String, HashSet<String>> expSet) {
         int i, j, k;
         boolean FLAG;// 跳出while循环标记
+        int count = 0;
         HashMap<String, HashSet<String>> res = new HashMap<>(); // 存放follow集的set集合
         while (true) {
+            count++;
             FLAG = false;
             for (String s : expSet.keySet()) { // 遍历所有产生式
                 String left = s; // 当前产生式左部非终结符
-                HashSet<String> rightSet = expSet.get(left); // 当前产生式右部set集合
+                HashSet<String> rightSet = expSet.get(left); // 当前left为左部的产生式的右部set集合
+                HashSet<String> set = this.First.get(left); // 当前left为左部的产生式的first集
+                boolean SKIP = false; // 跳过标记
                 for (String right : rightSet) { // 遍历left为左部的所有产生式
                     if (right == null) { // right为null 即ε
+                        set.add(null); // 将ε加入left的first集
                         continue;
                     }
                     k = right.length();
+                    // 求first集
+                    String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
+                    // 将firstLetter的first集加入
+                    FLAG = addFirstSetOfFirstLetter(left, right, set);
+                    if (FLAG == false) {
+                        System.out.println("11111111111111");
+
+                    }
+                    // 如果右部只有一个元素 跳过下面的循环求first的部分
+                    if (right.length() == 1) {
+                        if (right == null) { // 右部只有一个元素ε
+                            set.add(null); // 将ε加入left的first集
+                        }
+                        SKIP = true;
+                    }
                     for (i = 0; i < k; i++) {
-                        // 求first集
-                        boolean SKIP = false; // 跳过标记
-                        String vn = String.valueOf(right.charAt(i));
-                        HashSet<String> set = this.First.get(left); // left的first集
-                        String firstLetter = String.valueOf(right.charAt(0)); // 取出右部第一个字符
-                        // 将firstLetter的first集加入
-                        int size = set.size();
-                        set.addAll(removeNullCharFromFirstSet(this.First.get(firstLetter)));
-                        if (set.size() > size) { // 有新元素加入
-                            FLAG = true;
-                        }
-                        this.First.put(left, set);
-                        // 如果右部只有一个元素 跳过下面的循环求first的部分
-                        if (right.length() == 1) {
-                            if (right == null) { // 右部只有一个元素ε
-                                set.add(null); // 将ε加入left的first集
-                            }
-                            SKIP = true;
-                        }
+                        String vn = String.valueOf(right.charAt(i)); // 求vn的follow集
                         for (j = i + 1; j < k; j++) {
                             // 求first集 处理右部字符可推空的情况
-                            if (!SKIP && j < k - 1 && isNullable(right.substring(0, j).toCharArray())) { // j字符前面全可推空
-                                FLAG = AllCharNullBefore(left, right, j);
+                            if (i == 0) {
+                                if (!SKIP && j <= k - 1 && isNullable(right.substring(0, j).toCharArray())) { // j字符前面全可推空
+                                    FLAG = AllCharNullBefore(left, right, j);
+                                    if (FLAG == false) {
+                                        System.out.println("22222222222222");
+                                    }
+                                }
                             }
 
 //                      求vn的follow集
@@ -308,25 +328,36 @@ public class LLGrammar extends Grammar {
                                     String str = String.valueOf(right.charAt(j + 1));
                                     res.put(vn, First.get(str)); // 将j后一个符号的first集加入到所求vn的follow集中
                                     FLAG = true;
-
+                                    if (FLAG == false) {
+                                        System.out.println("33333333333333");
+                                    }
                                 }
                             }
                             // 所求符号后面全部可推空的时候 将产生式左边的follow集加入到所求的follow集
                             if (isNullable(right.substring(i, k - 1).toCharArray())) {
                                 res.put(vn, First.get(left)); // 将left的first集加入到所求vn的follow集中
                                 FLAG = true;
+                                if (FLAG == false) {
+                                    System.out.println("444444444444");
+                                }
                             }
                         }
 
                     }
 
                 }
-                // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
-                if (!FLAG) {
-                    break;
-                }
+
             }
-            return res;
+            // 若在此轮迭代计算中temp集合没有变化 说明计算完毕 退出循环
+            if (!FLAG) {
+                //System.out.println(count);
+                break;
+            }
         }
+        return res;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

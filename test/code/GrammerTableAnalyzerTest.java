@@ -27,11 +27,7 @@ public class GrammerTableAnalyzerTest {
         VT.add("g");
         // expSet
 
-        // A A→BCc | gDB
-        temp.add("BCc");
-        temp.add("gDB");
-        expSet.put("A", temp);
-        temp = new HashSet<>();
+
         // B B→bCDE | ε
         temp.add(null);
         temp.add("bCDE");
@@ -47,6 +43,11 @@ public class GrammerTableAnalyzerTest {
         temp.add("dD");
         temp.add(null);
         expSet.put("D", temp);
+        temp = new HashSet<>();
+        // A A→BCc | gDB
+        temp.add("BCc");
+        temp.add("gDB");
+        expSet.put("A", temp);
         temp = new HashSet<>();
         // E E→gAf | c
         temp.add("gAf");
