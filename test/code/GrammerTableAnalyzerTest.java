@@ -1,17 +1,48 @@
 package code;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class GrammerTableAnalyzerTest {
 
     LLGrammar Test;
+    @Before
     public void getTable() {
+
         HashSet<String> VT = new HashSet<String>(); // 终结符集
         HashSet<String> VN = new HashSet<String>(); // 非终结符集
         HashMap<String, HashSet<String>> expSet = new HashMap<String, HashSet<String>>(); // 产生式集合
         HashSet<String> temp = new HashSet<>();
         String endChar = "#";
+
+        VN.add("A");
+        VN.add("B");
+        VN.add("S");
+        VN.add("C");
+        VT.add("a");
+        VT.add("b");
+        VT.add("c");
+        temp.add("AB");
+        expSet.put("S", temp);
+        temp = new HashSet<>();
+        temp.add(null);
+        temp.add("a");
+        expSet.put("A", temp);
+        temp = new HashSet<>();
+        temp.add("b");
+        temp.add(null);
+        temp.add("Cc");
+        expSet.put("B", temp);
+        temp = new HashSet<>();
+        temp.add("aAB");
+        expSet.put("C", temp);
+        Test = new LLGrammar("S", VT, VN, expSet);
+        Test.Init();
+
+        /*
         // VN
         VN.add("A");
         VN.add("B");
@@ -53,7 +84,7 @@ public class GrammerTableAnalyzerTest {
         temp.add("gAf");
         temp.add("c");
         expSet.put("E", temp);
-        Test = new LLGrammar("S", VT, VN, expSet);
+        Test = new LLGrammar("A", VT, VN, expSet);
         Test.Init();
         // 手动构造first集
         HashSet<String> set = new HashSet<>();
@@ -125,44 +156,14 @@ public class GrammerTableAnalyzerTest {
         set.add("f");
         set.add(endChar);
         Test.Follow.put("E", set);
-/*
-//        // 测试输入是否正确
-        for (String vn :
-                VN) {
-            System.out.println("vn" + vn + ":");
-            HashSet<String> exps = expSet.get(vn);
-            for (String exp :
-                    exps) {
-                System.out.println(exp);
-            }
-
-//            // First集
-//            System.out.println(vn+"的first集为");
-//            System.out.println("--------------------");
-//            for (String f :
-//                    Test.First.get(vn)) {
-//                System.out.println(f);
-//            }
-//            System.out.println("--------------------");
-//            // Follow集
-//            System.out.println(vn+"的follow集为");
-//            System.out.println("--------------------");
-//            for (String f :
-//                    Test.Follow.get(vn)) {
-//                System.out.println(f);
-//            }
-//            System.out.println("--------------------");
-//            System.out.println();
-//        }
-            HashMap<Pair<String, String>, Exp> table = new HashMap<Pair<String, String>, Exp>();
-            GrammerTableAnalyzer.getTable(table, Test);
-            for (Pair p :
-                    table.keySet()) {
-                System.out.println("key: " + p);
-                System.out.println("value: " + table.get(p).left + "->" + table.get(p).rightList);
-            }
-        }
-*/
+        */
+    }
+    @Test
+    public void test() {
+        //LLGrammar grammar = new LLGrammar(Test.S, Test.VT, Test.VN, Test.expSet);
+        GrammerTableAnalyzer analyzer = new GrammerTableAnalyzer("ab");
+        analyzer.getTable(analyzer.table, Test);
+        analyzer.analyze("S", Test);
     }
 
 }

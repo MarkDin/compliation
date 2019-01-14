@@ -9,6 +9,7 @@ import  org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class LLGrammarTest {
     GrammerTableAnalyzerTest test = new GrammerTableAnalyzerTest();
@@ -22,6 +23,7 @@ public class LLGrammarTest {
 
     @Test
     public void follow() {
+        /*
         HashMap<String, HashSet<String>> expectedFirst = test.Test.First;
         HashMap<String, HashSet<String>> expectedFollow = test.Test.Follow;
         Test.Init();
@@ -38,6 +40,11 @@ public class LLGrammarTest {
         //assertEquals(expectedFirst, Test.First);
         // System.out.println(Test.expSet.get("D"));
         assertEquals(expectedFirst, Test.First);
+        */
+        Test.Init();
+        Test.nullable();
+        System.out.println(Test.follow(Test.expSet));
+
 
     }
 }
